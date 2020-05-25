@@ -3,6 +3,7 @@ import pygame as pg
 from sys import path
 from sys import exit
 import os
+import random
 
 #my_path = os.path.dirname(os.path.realpath(__file__))
 #os.chdir(my_path)
@@ -25,9 +26,13 @@ num = 0
 t = 0
 g = 0
 time_coin = 0
-health = 10
+health = 15
 maze = []
-walls = [1]
+walls = 1
+ran1 = random.uniform(0.5,1.5)
+ran2 = random.uniform(0.2,1.9)
+ran3 = random.uniform(0.6,2.3)
+ran4 = random.uniform(0.3,2.5)
 player = pg.Rect(10,10,50,50)
 coin = pg.Rect(700,510,50,50)
 
@@ -55,11 +60,11 @@ wall_11 = pg.Rect(635,460,10,140)
 maze.append(wall_11)
 wall_12 = pg.Rect(645,460,270,10)
 maze.append(wall_12)
-move_1 = pg.Rect(300,400,150,10)
 
-move_2 = 0
-move_3 = 0
-move_4 = 0
+move_1 = pg.Rect(300,500,150,10)
+move_2 = pg.Rect(300,400,150,10)
+move_3 = pg.Rect(300,300,150,10)
+move_4 = pg.Rect(300,200,150,10)
 
 top = pg.Rect(0,0,800,0)
 bottom = pg.Rect(0,600,800,0)
@@ -79,27 +84,28 @@ def move(which,num):
         if keys[pg.K_LSHIFT]:
             player[num] += 2
 
-def move_wall(wall):
+def move_wall(wall,speed):
     global walls
     if wall.colliderect(wall_6):
-        walls.clear()
-        walls[0] = 1
+        walls = 1
     if wall.colliderect(side_l):
-        walls.clear()
-        walls[0] = 2
+        walls = 2
 
-    if walls[0] == 1:
-        wall[0] -= 1
-    if walls[0] == 2:
-        wall[0] -= 1
+    if walls == 1:
+        wall[0] -= speed
+    if walls == 2:
+        wall[0] -= speed
     pg.draw.rect(screen,white,wall)
 
 while True:
-    print(walls[0])
     pg.event.pump()
     keys = pg.key.get_pressed()
     screen.fill(black)
-    move_wall(move_1)
+    
+    move_wall(move_1,ran1)
+    move_wall(move_2,ran2)
+    move_wall(move_3,ran3)
+    move_wall(move_4,ran4)
 
     if keys[pg.K_w]:
         move(0,1)
@@ -144,7 +150,7 @@ while True:
             health -= 1
             if health == 0:
                 player = pg.Rect(10,10,50,50)
-                health = 10
+                health = 15
 
     pg.draw.rect(screen,white,coin)
     pg.draw.rect(screen,white,player)
@@ -155,10 +161,16 @@ while True:
     pg.draw.rect(screen,white,side_r)
 
     num = num+1
-    text = font.render(str(num), True, white)
-    textRect = text.get_rect()
-    textRect.center = (400, 300)
-    screen.blit(text,textRect)
+    num_text = font.render(str(num), True, white)
+    num_textRect = num_text.get_rect()
+    num_textRect.center = (400, 300)
+    screen.blit(num_text,num_textRect)
+    
+    h_text = font.render(str(health), True, white)
+    h_textRect = h_text.get_rect()
+    h_textRect.center = (300, 300)
+    screen.blit(h_text,h_textRect)
+
 
     pg.display.flip()
     clock.tick(50)

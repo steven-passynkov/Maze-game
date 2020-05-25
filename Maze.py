@@ -18,11 +18,13 @@ black = (0,0,0)
 #Setup
 pg.init()
 screen = pg.display.set_mode((800,600)) #set your window size, (x,y)
-pg.display.set_caption("Game Title")
 clock = pg.time.Clock()#you can just use import time and time.sleep()
-font = pg.font.Font('freesansbold.ttf', 32)
+font = pg.font.Font('freesansbold.ttf', 24)
 state = 1
-num = 0
+die = 0
+coin = 0
+num = 30000
+x = False
 t = 0
 g = 0
 time_coin = 0
@@ -34,8 +36,8 @@ ran2 = random.uniform(0.2,1.9)
 ran3 = random.uniform(0.6,2.3)
 ran4 = random.uniform(0.3,2.5)
 player = pg.Rect(10,10,50,50)
-coin_1 = pg.Rect(700,510,50,50)
-coin_2 = 0
+coin_1 = pg.Rect(700,510,25,25)
+coin_2 = pg.Rect(750,25,25,25)
 coin_3 = 0
 side = pg.Rect(0,80,10,600)
 end = pg.Rect(225,120,50,50)
@@ -136,6 +138,8 @@ while True:
         clock.tick(50)
 
     while state == 1:
+        score = num/10
+        pg.display.set_caption("Times died: " + str(die) + " Score: " + str(score))
         pg.event.pump()
         keys = pg.key.get_pressed()
         screen.fill(black)
@@ -153,21 +157,27 @@ while True:
             move(0,0)
         if keys[pg.K_d]:
             move(1,0)
+            
         if player.colliderect(end):
             state = 2
         if player.colliderect(wall_7):
             player = pg.Rect(500,300,50,50)
+        if player.colliderect(wall_9):
+            player = pg.Rect(200,530,50,50)
         if player.colliderect(coin_1):
-            coin = pg.Rect(999,999,50,50)
+            coin += 1
+            score += 100
+            x = True
+            coin_1 = pg.Rect(x,999,50,50)
+        if player.colliderect(wall_12) and x == True:
+            player = pg.Rect(500,300,50,50)
+        if player.colliderect(coin_2):
+            coin += 1
+            score + 500
+            coin_2 = pg.Rect(999,999,50,50)
         if player.colliderect(wall_10):
             player = pg.Rect(530,500,50,50)
-            time_coin = 1
-        if time_coin == 1:
-            g += 1
-            if g == 90:
-                player = pg.Rect(400,530,50,50)
         if player.colliderect(wall_11):
-
             if t == 0:
                 player = pg.Rect(700,510,50,50)
                 t += 1
@@ -180,25 +190,28 @@ while True:
             if player.colliderect(wall):
                 health -= 1
                 if health == 0:
+                    die += 1
                     player = pg.Rect(10,10,50,50)
                     health = 15
+        if num == 0:
+            state = 2
 
-        pg.draw.rect(screen,white,coin_1)
-        pg.draw.rect(screen,white,player)
-        pg.draw.rect(screen,white,side)
-        pg.draw.rect(screen,white,end)
-
-        num = num+1
-        num_text = font.render(str(num), True, white)
+        num = num-1
+        num_text = font.render("timer: "+str(num), True, white)
         num_textRect = num_text.get_rect()
-        num_textRect.center = (400, 300)
+        num_textRect.center = (475,20)
         screen.blit(num_text,num_textRect)
         
-        h_text = font.render(str(health), True, white)
+        h_text = font.render("health: "+str(health), True, white)
         h_textRect = h_text.get_rect()
-        h_textRect.center = (300, 300)
+        h_textRect.center = (325, 20)
         screen.blit(h_text,h_textRect)
-
+        
+        pg.draw.ellipse(screen,white,coin_1)
+        pg.draw.ellipse(screen,white,coin_2)
+        pg.draw.ellipse(screen,white,player)
+        pg.draw.rect(screen,white,side)
+        pg.draw.rect(screen,white,end)
 
         pg.display.flip()
         clock.tick(50)
@@ -226,6 +239,12 @@ while True:
         if player.colliderect(side_l):
             player = pg.Rect(10,10,50,50)
             
-        pg.draw.rect(screen,white,player)
+        s_text = font.render("Score: "+ str(score/die), True, white)
+        s_textRect = s_text.get_rect()
+        s_textRect.center = (400,300)
+        screen.blit(s_text,s_textRect)
+        
+            
+        pg.draw.ellipse(screen,white,player)
         pg.display.flip()
         clock.tick(50)

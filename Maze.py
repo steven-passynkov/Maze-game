@@ -20,13 +20,15 @@ pg.init()
 screen = pg.display.set_mode((800,600)) #set your window size, (x,y)
 clock = pg.time.Clock()#you can just use import time and time.sleep()
 font = pg.font.Font('freesansbold.ttf', 24)
-state = 1
+state = 0
 die = 0
 coin = 0
 num = 30000
 x = False
 t = 0
 g = 0
+color = random.randint(1,4)
+counter = 0
 time_coin = 0
 health = 15
 maze = []
@@ -111,6 +113,9 @@ def move_wall(wall,speed):
 
 while True:
     while state == 0:
+        counter += 1
+        score = num/10
+        pg.display.set_caption("Times died: " + str(die) + " Score: " + str(score))
         pg.event.pump()
         screen.fill(black)
         keys = pg.key.get_pressed()
@@ -132,7 +137,16 @@ while True:
             player = pg.Rect(10,10,50,50)
         if player.colliderect(side_l):
             player = pg.Rect(10,10,50,50)
-            
+        if counter == 9:
+            color = random.randint(1,4)
+            counter = 0
+        the_color = dict({1:white,2:blue,3:red,4:green})
+        
+        text = font.render("Maze game", True, the_color[color])
+        textRect = text.get_rect()
+        textRect.center = (400, 200)
+        screen.blit(text,textRect)
+        
         pg.draw.rect(screen,white,player)
         pg.display.flip()
         clock.tick(50)
@@ -157,7 +171,7 @@ while True:
             move(0,0)
         if keys[pg.K_d]:
             move(1,0)
-            
+        
         if player.colliderect(end):
             state = 2
         if player.colliderect(wall_7):

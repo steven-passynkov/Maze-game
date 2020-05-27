@@ -2,14 +2,10 @@ import pygame as pg
 import os
 import random
 import socket
-import pandas as pd
+#import pandas as pd
 import json
 
 state = 0
-
-#my_path = os.path.dirname(os.path.realpath(__file__))
-#os.chdir(my_path)
-#path.append(my_path)
 
 #Colours
 red = (255,0,0)
@@ -29,16 +25,14 @@ num = 30000
 x = False
 t = 0
 g = 0
+i = 0
 color = random.randint(1,4)
 counter = 0
 time_coin = 0
 health = 15
 maze = []
+move_wall = []
 walls = 1
-ran1 = random.uniform(0.5,1.5)
-ran2 = random.uniform(0.2,1.9)
-ran3 = random.uniform(0.6,2.3)
-ran4 = random.uniform(0.3,2.5)
 player = pg.Rect(373,300,50,50)
 coin_1 = pg.Rect(700,510,25,25)
 coin_2 = pg.Rect(750,25,25,25)
@@ -47,6 +41,7 @@ game = pg.Rect(200,300,100,100)
 leaderbord = pg.Rect(600,300,100,100)
 Quit = pg.Rect(400, 450,100,100)
 name = socket.gethostname()
+score = num/10
 
 end = pg.Rect(225,120,50,50)
 door_image = pg.image.load("door.png")
@@ -78,13 +73,13 @@ wall_12 = pg.Rect(645,460,270,10)
 maze.append(wall_12)
 
 move_1 = pg.Rect(300,500,150,10)
-maze.append(move_1)
+move_wall.append(move_1)
 move_2 = pg.Rect(300,400,150,10)
-maze.append(move_2)
+move_wall.append(move_2)
 move_3 = pg.Rect(300,300,150,10)
-maze.append(move_3)
+move_wall.append(move_3)
 move_4 = pg.Rect(300,200,150,10)
-maze.append(move_4)
+move_wall.append(move_4)
 
 top = pg.Rect(0,0,800,0)
 maze.append(top)
@@ -107,19 +102,7 @@ def move(which,num):
         player[num] += 1
         if keys[pg.K_LSHIFT]:
             player[num] += 2
-
-def move_wall(wall,speed):
-    global walls
-    if wall.colliderect(wall_6):
-        walls = 1
-    if wall.colliderect(side):
-        walls = 2
-
-    if walls == 1:
-        wall[0] -= speed
-    if walls == 2:
-        wall[0] -= speed
-    pg.draw.rect(screen,white,wall)
+            
 def esc():
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -153,8 +136,10 @@ while True:
             player = pg.Rect(10,10,50,50)
         if player.colliderect(game):
             player = pg.Rect(10,10,50,50)
+            counter = 0
             state = 2
         if player.colliderect(leaderbord):
+            counter = 0
             state = 1
         if counter == 9:
             color = random.randint(1,4)
@@ -219,6 +204,7 @@ while True:
             player = pg.Rect(10,10,50,50)
         if player.colliderect(Quit):
             player = pg.Rect(373,300,50,50)
+            counter = 0
             state = 0
 
         if counter == 9:
@@ -226,18 +212,13 @@ while True:
             counter = 0
         the_color = dict({1:white,2:blue,3:red,4:green})
 
-        df = pd.DataFrame({'Name': [name],'Score' : [score]})
-        df = df.sort(['Score'], ascending=[1, 3])
+        #df = pd.DataFrame({'Name': [name],'Score' : [score]})
+        #df = df.sort(['Score'], ascending=[1, 3])
         
-        df_text = font.render("Score: "+ str(df), True, white)
-        df_textRect = df_text.get_rect()
-        df_textRect.center = (400,300)
-        screen.blit(df_text,df_textRect)
-
-        if counter == 9:
-            color = random.randint(1,4)
-            counter = 0
-        the_color = dict({1:white,2:blue,3:red,4:green})
+        #df_text = font.render("Score: "+ str(df), True, white)
+        #df_textRect = df_text.get_rect()
+        #df_textRect.center = (400,300)
+        #screen.blit(df_text,df_textRect)
 
         text = font.render("Maze game", True, the_color[color])
         textRect = text.get_rect()
@@ -249,16 +230,31 @@ while True:
         pg.display.flip()
         clock.tick(50)
     while state == 2:
+        counter += 1
         score = num/10
         pg.display.set_caption("Times died: " + str(die) + " Score: " + str(score))
         pg.event.pump()
         keys = pg.key.get_pressed()
         screen.fill(black)
 
-        move_wall(move_1,ran1)
-        move_wall(move_2,ran2)
-        move_wall(move_3,ran3)
-        move_wall(move_4,ran4)
+        for wall in move_wall:
+            i += 1
+            image_wall = pg.image.load("wall.jpg")
+            image_wall = pg.transform.scale(image_wall,(wall[2],wall[3]))
+            x_wall = wall[0]
+            y_wall = wall[1]
+            if i < 200:
+                ran = random.uniform(0.5,5.5)
+            if wall.colliderect(wall_6):
+                walls = 1
+            if wall.colliderect(side):
+                walls = 2
+
+            if walls == 1:
+                wall[0] -= ran
+            if walls == 2:
+                wall[0] += ran
+            screen.blit(image_wall, (x_wall,y_wall))
 
         if keys[pg.K_w]:
             move(0,1)
@@ -270,6 +266,7 @@ while True:
             move(1,0)
 
         if player.colliderect(end):
+            counter = 0
             state = 1
         if player.colliderect(wall_7):
             player = pg.Rect(500,300,50,50)

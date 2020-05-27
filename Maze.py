@@ -43,6 +43,9 @@ coin_2 = pg.Rect(750,25,25,25)
 coin_3 = 0
 side = pg.Rect(0,80,10,600)
 end = pg.Rect(225,120,50,50)
+game = pg.Rect(200,300,50,50)
+confirm_yes = pg.Rect(200,300,50,50)
+confirm_no = pg.Rect(600,300,50,50)
 
 wall_1 = pg.Rect(0,75,700,10)
 maze.append(wall_1)
@@ -137,6 +140,9 @@ while True:
             player = pg.Rect(10,10,50,50)
         if player.colliderect(side_l):
             player = pg.Rect(10,10,50,50)
+        if player.colliderect(game):
+            player = pg.Rect(10,10,50,50)
+            state = 2
         if counter == 9:
             color = random.randint(1,4)
             counter = 0
@@ -147,11 +153,39 @@ while True:
         textRect.center = (400, 200)
         screen.blit(text,textRect)
         
-        pg.draw.rect(screen,white,player)
+        pg.draw.ellipse(screen,white,player)
+        pg.draw.rect(screen,white,game)
         pg.display.flip()
         clock.tick(50)
-
     while state == 1:
+        counter += 1
+        score = num/10
+        pg.display.set_caption("Times died: " + str(die) + " Score: " + str(score))
+        pg.event.pump()
+        screen.fill(black)
+        keys = pg.key.get_pressed()
+        
+        if keys[pg.K_w]:
+            move(0,1)
+        if keys[pg.K_s]:
+            move(1,1)
+        if keys[pg.K_a]:
+            move(0,0)
+        if keys[pg.K_d]:
+            move(1,0)
+        if player.colliderect(top):
+            player = pg.Rect(10,10,50,50)
+        if player.colliderect(bottom):
+            player = pg.Rect(10,10,50,50)
+        if player.colliderect(side_r):
+            player = pg.Rect(10,10,50,50)
+        if player.colliderect(side_l):
+            player = pg.Rect(10,10,50,50)
+    
+        pg.draw.ellipse(screen,white,player)
+        pg.display.flip()
+        clock.tick(50)
+    while state == 2:
         score = num/10
         pg.display.set_caption("Times died: " + str(die) + " Score: " + str(score))
         pg.event.pump()
@@ -230,7 +264,7 @@ while True:
         pg.display.flip()
         clock.tick(50)
         
-    while state == 2:
+    while state == 3:
         pg.event.pump()
         screen.fill(black)
         keys = pg.key.get_pressed()

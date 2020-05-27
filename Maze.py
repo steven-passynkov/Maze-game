@@ -1,6 +1,7 @@
 import pygame as pg
 from sys import path
 from sys import exit
+import sys
 import os
 import random
 
@@ -37,15 +38,15 @@ ran1 = random.uniform(0.5,1.5)
 ran2 = random.uniform(0.2,1.9)
 ran3 = random.uniform(0.6,2.3)
 ran4 = random.uniform(0.3,2.5)
-player = pg.Rect(10,10,50,50)
+player = pg.Rect(373,300,50,50)
 coin_1 = pg.Rect(700,510,25,25)
 coin_2 = pg.Rect(750,25,25,25)
 coin_3 = 0
 side = pg.Rect(0,80,10,600)
 end = pg.Rect(225,120,50,50)
-game = pg.Rect(200,300,50,50)
-confirm_yes = pg.Rect(200,300,50,50)
-confirm_no = pg.Rect(600,300,50,50)
+game = pg.Rect(200,300,100,100)
+leaderbord = pg.Rect(600,300,100,100)
+Quit = pg.Rect(400, 450,100,100)
 
 wall_1 = pg.Rect(0,75,700,10)
 maze.append(wall_1)
@@ -113,7 +114,12 @@ def move_wall(wall,speed):
     if walls == 2:
         wall[0] -= speed
     pg.draw.rect(screen,white,wall)
-
+def esc():
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            pg.display.update()
+            pg.display.quit()
+            pg.quit()
 while True:
     while state == 0:
         counter += 1
@@ -143,6 +149,8 @@ while True:
         if player.colliderect(game):
             player = pg.Rect(10,10,50,50)
             state = 2
+        if player.colliderect(leaderbord):
+            state = 1
         if counter == 9:
             color = random.randint(1,4)
             counter = 0
@@ -153,8 +161,28 @@ while True:
         textRect.center = (400, 200)
         screen.blit(text,textRect)
         
+        text = font.render("Game", True, the_color[color])
+        textRect = text.get_rect()
+        textRect.center = (200, 300)
+        screen.blit(text,textRect)
+        
+        text = font.render("Leaderbord", True, the_color[color])
+        textRect = text.get_rect()
+        textRect.center = (600, 300)
+        screen.blit(text,textRect)
+        
+        text = font.render("Quit", True, the_color[color])
+        textRect = text.get_rect()
+        textRect.center = (400, 450)
+        screen.blit(text,textRect)
+        
+        if player.colliderect(Quit):
+            pg.display.update()
+            pg.display.quit()
+            pg.quit()
+
+        esc()
         pg.draw.ellipse(screen,white,player)
-        pg.draw.rect(screen,white,game)
         pg.display.flip()
         clock.tick(50)
     while state == 1:
@@ -164,6 +192,7 @@ while True:
         pg.event.pump()
         screen.fill(black)
         keys = pg.key.get_pressed()
+        Quit = pg.Rect(400,500,100,100)
         
         if keys[pg.K_w]:
             move(0,1)
@@ -181,7 +210,21 @@ while True:
             player = pg.Rect(10,10,50,50)
         if player.colliderect(side_l):
             player = pg.Rect(10,10,50,50)
-    
+        if player.colliderect(Quit):
+            player = pg.Rect(373,300,50,50)
+            state = 0
+            
+        if counter == 9:
+            color = random.randint(1,4)
+            counter = 0
+        the_color = dict({1:white,2:blue,3:red,4:green})
+        
+        text = font.render("Maze game", True, the_color[color])
+        textRect = text.get_rect()
+        textRect.center = (400, 500)
+        screen.blit(text,textRect)
+        
+        esc()
         pg.draw.ellipse(screen,white,player)
         pg.display.flip()
         clock.tick(50)
@@ -255,6 +298,7 @@ while True:
         h_textRect.center = (325, 20)
         screen.blit(h_text,h_textRect)
         
+        esc()
         pg.draw.ellipse(screen,white,coin_1)
         pg.draw.ellipse(screen,white,coin_2)
         pg.draw.ellipse(screen,white,player)
@@ -264,7 +308,7 @@ while True:
         pg.display.flip()
         clock.tick(50)
         
-    while state == 3:
+    while state == 2:
         pg.event.pump()
         screen.fill(black)
         keys = pg.key.get_pressed()
@@ -292,7 +336,7 @@ while True:
         s_textRect.center = (400,300)
         screen.blit(s_text,s_textRect)
         
-            
+        esc()
         pg.draw.ellipse(screen,white,player)
         pg.display.flip()
         clock.tick(50)

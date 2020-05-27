@@ -1,9 +1,8 @@
 import pygame as pg
-from sys import path
-from sys import exit
-import sys
 import os
 import random
+import socket
+import json
 
 state = 0
 
@@ -46,6 +45,7 @@ coin_3 = 0
 game = pg.Rect(200,300,100,100)
 leaderbord = pg.Rect(600,300,100,100)
 Quit = pg.Rect(400, 450,100,100)
+name = socket.gethostname()
 
 end = pg.Rect(225,120,50,50)
 door_image = pg.image.load("door.png")
@@ -350,7 +350,7 @@ while True:
         if counter == 9:
             color = random.randint(1,4)
             counter = 0
-        the_color = dict({1:white,2:blue,3:red,4:green})
+        the_color = dict({1:white,2:blue,3:red,4:green})\
         
         s_text = font.render("Score: "+ str(score/die), True, white)
         s_textRect = s_text.get_rect()

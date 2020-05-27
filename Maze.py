@@ -42,11 +42,13 @@ player = pg.Rect(373,300,50,50)
 coin_1 = pg.Rect(700,510,25,25)
 coin_2 = pg.Rect(750,25,25,25)
 coin_3 = 0
-side = pg.Rect(0,80,10,600)
-end = pg.Rect(225,120,50,50)
 game = pg.Rect(200,300,100,100)
 leaderbord = pg.Rect(600,300,100,100)
 Quit = pg.Rect(400, 450,100,100)
+
+end = pg.Rect(225,120,50,50)
+door_image = pg.image.load("door.png")
+door_image = pg.transform.scale(door_image,(end[2],end[3]))
 
 wall_1 = pg.Rect(0,75,700,10)
 maze.append(wall_1)
@@ -90,6 +92,8 @@ side_r = pg.Rect(0,0,0,600)
 maze.append(side_r)
 side_l = pg.Rect(800,0,0,800)
 maze.append(side_l)
+side = pg.Rect(0,80,10,600)
+maze.append(side)
 
 def move(which,num):
     keys = pg.key.get_pressed()
@@ -277,7 +281,11 @@ while True:
                 t -= 1
 
         for wall in maze:
-            pg.draw.rect(screen,white,wall)
+            image_wall = pg.image.load("wall.jpg")
+            image_wall = pg.transform.scale(image_wall,(wall[2],wall[3]))
+            x_walls = wall[0]
+            y_walls = wall[1]
+            screen.blit(image_wall, (x_walls,y_walls))
             if player.colliderect(wall):
                 health -= 1
                 if health == 0:
@@ -288,22 +296,25 @@ while True:
             state = 2
 
         num = num-1
-        num_text = font.render("timer: "+str(num), True, white)
+        num_text = font.render("timer: "+ str(num), True, white)
         num_textRect = num_text.get_rect()
         num_textRect.center = (475,20)
         screen.blit(num_text,num_textRect)
         
-        h_text = font.render("health: "+str(health), True, white)
+        h_text = font.render("health: "+ str(health), True, white)
         h_textRect = h_text.get_rect()
         h_textRect.center = (325, 20)
         screen.blit(h_text,h_textRect)
+        
+        x_door = end[0]
+        y_door = end[1]
         
         esc()
         pg.draw.ellipse(screen,white,coin_1)
         pg.draw.ellipse(screen,white,coin_2)
         pg.draw.ellipse(screen,white,player)
-        pg.draw.rect(screen,white,side)
         pg.draw.rect(screen,white,end)
+        screen.blit(door_image, (x_door,y_door))
 
         pg.display.flip()
         clock.tick(50)

@@ -194,6 +194,7 @@ while True:
         counter += 1
         score = num/10
         pg.display.set_caption("Times died: " + str(die) + " Score: " + str(score))
+        counter += 1
         pg.event.pump()
         screen.fill(black)
         keys = pg.key.get_pressed()
@@ -207,6 +208,7 @@ while True:
             move(0,0)
         if keys[pg.K_d]:
             move(1,0)
+
         if player.colliderect(top):
             player = pg.Rect(10,10,50,50)
         if player.colliderect(bottom):
@@ -218,6 +220,19 @@ while True:
         if player.colliderect(Quit):
             player = pg.Rect(373,300,50,50)
             state = 0
+
+        if counter == 9:
+            color = random.randint(1,4)
+            counter = 0
+        the_color = dict({1:white,2:blue,3:red,4:green})
+
+        df = pd.DataFrame({'Name': [name],'Score' : [score]})
+        df = df.sort(['Score'], ascending=[1, 3])
+        
+        df_text = font.render("Score: "+ str(df), True, white)
+        df_textRect = df_text.get_rect()
+        df_textRect.center = (400,300)
+        screen.blit(df_text,df_textRect)
 
         if counter == 9:
             color = random.randint(1,4)
@@ -255,7 +270,7 @@ while True:
             move(1,0)
 
         if player.colliderect(end):
-            state = 3
+            state = 1
         if player.colliderect(wall_7):
             player = pg.Rect(500,300,50,50)
         if player.colliderect(wall_9):
@@ -317,55 +332,5 @@ while True:
         pg.draw.rect(screen,white,end)
         screen.blit(door_image, (x_door,y_door))
 
-        pg.display.flip()
-        clock.tick(50)
-
-    while state == 3:
-        counter += 1
-        pg.event.pump()
-        screen.fill(black)
-        keys = pg.key.get_pressed()
-        Quit = pg.Rect(400,500,100,100)
-
-        if keys[pg.K_w]:
-            move(0,1)
-        if keys[pg.K_s]:
-            move(1,1)
-        if keys[pg.K_a]:
-            move(0,0)
-        if keys[pg.K_d]:
-            move(1,0)
-
-        if player.colliderect(top):
-            player = pg.Rect(10,10,50,50)
-        if player.colliderect(bottom):
-            player = pg.Rect(10,10,50,50)
-        if player.colliderect(side_r):
-            player = pg.Rect(10,10,50,50)
-        if player.colliderect(side_l):
-            player = pg.Rect(10,10,50,50)
-        if player.colliderect(Quit):
-            player = pg.Rect(373,300,50,50)
-            state = 0
-        if counter == 9:
-            color = random.randint(1,4)
-            counter = 0
-        the_color = dict({1:white,2:blue,3:red,4:green})
-
-        df = pd.DataFrame({'Name': [name],'Score' : [score]})
-        df = df.sort(['Score'], ascending=[1, 3])
-        
-        df_text = font.render("Score: "+ str(df), True, white)
-        df_textRect = df_text.get_rect()
-        df_textRect.center = (400,300)
-        screen.blit(df_text,df_textRect)
-
-        text = font.render("Maze game", True, the_color[color])
-        textRect = text.get_rect()
-        textRect.center = (400, 500)
-        screen.blit(text,textRect)
-
-        esc()
-        pg.draw.ellipse(screen,white,player)
         pg.display.flip()
         clock.tick(50)
